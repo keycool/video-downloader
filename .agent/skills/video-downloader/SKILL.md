@@ -185,23 +185,20 @@ ffmpeg -i "video.f399.mp4" -i "audio.f140.m4a" -c:v copy -c:a aac -strict experi
 如果用户请求翻译中文字幕，使用 pyVideoTrans 进行处理：
 
 **前置条件**：
-- 需要已安装 pyVideoTrans（源码部署方式）
+- 需要已安装 pyVideoTrans（源码部署方式，路径：`D:\pyVideoTrans`）
 - 需要配置 DeepSeek API Key（在 pyVideoTrans GUI 中设置一次即可）
 
-**执行命令**：
+**执行命令**（使用完整路径调用，避免工作目录限制）：
 
 ```powershell
-# 切换到 pyVideoTrans 目录
-cd <pyvideotrans_path>
+# 英译中，仅中文硬字幕（推荐，体积小）
+D:\pyVideoTrans\.venv\Scripts\python.exe D:\pyVideoTrans\cli.py --task vtv --name "<视频完整路径>" --source_language_code en --target_language_code zh-cn --subtitle_type 1
 
-# 英译中，硬双语字幕（推荐学习）
-uv run cli.py --task vtv --name "<视频完整路径>" --source_language_code en --target_language_code zh-cn --subtitle_type 3
-
-# 英译中，仅中文硬字幕
-uv run cli.py --task vtv --name "<视频完整路径>" --source_language_code en --target_language_code zh-cn --subtitle_type 1
+# 英译中，硬双语字幕（适合学习）
+D:\pyVideoTrans\.venv\Scripts\python.exe D:\pyVideoTrans\cli.py --task vtv --name "<视频完整路径>" --source_language_code en --target_language_code zh-cn --subtitle_type 3
 
 # 使用 GPU 加速（如有 NVIDIA 显卡）
-uv run cli.py --task vtv --name "<视频完整路径>" --source_language_code en --target_language_code zh-cn --subtitle_type 3 --cuda
+D:\pyVideoTrans\.venv\Scripts\python.exe D:\pyVideoTrans\cli.py --task vtv --name "<视频完整路径>" --source_language_code en --target_language_code zh-cn --subtitle_type 1 --cuda
 ```
 
 **参数说明**：
@@ -215,9 +212,26 @@ uv run cli.py --task vtv --name "<视频完整路径>" --source_language_code en
 | `--model_name` | Whisper 模型：`large-v3`(推荐)、`medium`、`small` |
 | `--cuda` | 启用 GPU 加速 |
 
-**输出文件**：
-- 翻译后的视频会保存在原视频同目录下
-- 同时生成 `.srt` 字幕文件
+**输出文件位置**：
+- 输出目录：`D:\pyVideoTrans\output\<视频名称>/`
+- 包含文件：`*.mp4`(带字幕视频)、`zh-cn.srt`(中文字幕)、`en.srt`(英文字幕)等
+- **注意**：需手动将所需文件复制回原下载目录
+
+### Step 8: 轻量字幕方案（FFmpeg 直接烧录）
+
+如果已有 `.srt` 字幕文件，可用 FFmpeg 直接烧录，避免重新转码整个视频：
+
+```powershell
+# 合并视频+音频+烧录中文字幕（一步到位）
+ffmpeg -i "<视频.mp4>" -i "<音频.m4a>" -vf "subtitles='<字幕路径.srt>':force_style='FontSize=24,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2'" -c:a aac -strict experimental "<输出文件.mp4>"
+```
+
+**字幕路径注意**：路径中的 `\` 需改为 `/`，如 `E:/folder/zh-cn.srt`
+
+**适用场景**：
+- 已有字幕文件，只需烧录到视频
+- 不需要 pyVideoTrans 的语音识别功能
+- 追求更小的输出文件体积
 
 ## 错误处理
 
