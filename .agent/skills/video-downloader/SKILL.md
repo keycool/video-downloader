@@ -22,6 +22,7 @@ description: 使用 yt-dlp 下载视频，支持画质选择、字幕下载、�
 | 🌐 自动中文字幕 | 非中文视频自动识别语音并添加中文字幕 |
 | 📁 整理归档 | 自动创建结构化文件夹，按日期归档 |
 | 🎵 音频提取 | 支持仅下载音频（MP3 格式） |
+| 🧹 自动清理 | 临时文件超过 3 个时自动清理 |
 
 ## 参数说明
 
@@ -291,6 +292,66 @@ yt-dlp 支持 1000+ 网站，常用的包括：
 
 ```powershell
 D:\pyVideoTrans\.venv\Scripts\python.exe D:\pyVideoTrans\cli.py --help
+```
+
+---
+
+## 自动清理临时文件
+
+### 功能说明
+
+项目配置了自动清理机制，当 `tmpclaude-*` 临时文件超过 3 个时自动清理，保持工作目录整洁。
+
+### 实现方式
+
+**1. 清理脚本**：`.claude/hooks/cleanup-temp-files.sh`
+
+```bash
+#!/bin/bash
+# 自动清理临时文件的脚本
+# 当 tmpclaude-* 文件超过 3 个时自动清理
+
+WORK_DIR="$(pwd)"
+TEMP_FILE_COUNT=$(find "$WORK_DIR" -maxdepth 1 -name "tmpclaude-*" -type f 2>/dev/null | wc -l)
+
+echo "检测到 $TEMP_FILE_COUNT 个临时文件"
+
+if [ "$TEMP_FILE_COUNT" -gt 3 ]; then
+    echo "临时文件数量超过 3 个，开始清理..."
+    find "$WORK_DIR" -maxdepth 1 -name "tmpclaude-*" -type f -delete
+    REMAINING_COUNT=$(find "$WORK_DIR" -maxdepth 1 -name "tmpclaude-*" -type f 2>/dev/null | wc -l)
+    echo "✅ 清理完成！删除了 $((TEMP_FILE_COUNT - REMAINING_COUNT)) 个临时文件"
+else
+    echo "临时文件数量未超过阈值，无需清理"
+fi
+```
+
+**2. Hook 配置**：`.claude/config.json`
+
+```json
+{
+  "hooks": {
+    "postToolUse": {
+      "enabled": true,
+      "command": "bash .claude/hooks/cleanup-temp-files.sh"
+    }
+  }
+}
+```
+
+### 工作流程
+
+1. 每次 Claude Code 执行完工具操作后，自动触发 `postToolUse` hook
+2. 运行清理脚本，检测临时文件数量
+3. 如果超过 3 个，自动删除所有 `tmpclaude-*` 文件
+4. 显示清理结果
+
+### 手动清理
+
+如需手动清理，可以运行：
+
+```bash
+bash .claude/hooks/cleanup-temp-files.sh
 ```
 
 ---

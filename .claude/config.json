@@ -1,0 +1,8 @@
+{
+  "hooks": {
+    "postToolUse": {
+      "enabled": true,
+      "command": "bash .claude/hooks/cleanup-temp-files.sh"
+    }
+  }
+}
