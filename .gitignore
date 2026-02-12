@@ -1,0 +1,33 @@
+# 临时文件
+tmpclaude-*
+
+# 下载的视频文件
+download/*/
+
+# 保留 download 目录结构但忽略内容
+!download/.gitkeep
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# IDE 配置
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Node
+node_modules/
