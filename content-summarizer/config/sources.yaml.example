@@ -1,0 +1,48 @@
+# 订阅源配置文件示例
+# 请复制此文件为 sources.yaml 并填入实际配置
+# cp sources.yaml.example sources.yaml
+
+version: "1.0"
+
+# 订阅源列表
+sources:
+  # YouTube频道示例
+  # - name: "频道名称"
+  #   type: youtube
+  #   url: "https://www.youtube.com/@ChannelName/videos"
+  #   enabled: true
+
+  # Bilibili UP主示例
+  # - name: "UP主名称"
+  #   type: bilibili
+  #   url: "https://space.bilibili.com/123456789"
+  #   enabled: true
+
+  # 小宇宙播客示例
+  # - name: "播客名称"
+  #   type: xiaoyuzhou
+  #   url: "podcast/xxxxx"
+  #   enabled: true
+
+# AI配置
+ai:
+  # 提供商: openai | minimax | custom
+  provider: "minimax"
+
+  # API配置
+  base_url: "https://api.minimax.chat/v1"
+  model: "abab6.5s-chat"
+
+  # API密钥（请替换为你自己的）
+  api_key: "your-api-key-here"
+
+# 摘要配置
+summary:
+  # 长度: short(500字) | medium(1500字) | long(2500字) | custom
+  length: "medium"
+  custom_words: 2000
+
+# 输出配置
+output:
+  root: "./output"
+  format: "markdown"
